@@ -1,58 +1,50 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Accueil from "./pages/accueil";
-import boxesData from "./data/boxes.json";
+import boxes from "./data/boxes.json";
 
 function App() {
-    const [selectedFlavors, setSelectedFlavors] = useState([]);
-    const [excludeCalifornia, setExcludeCalifornia] = useState(false);
-    const [filteredMenus, setFilteredMenus] = useState(boxesData);
+    const [filters, setFilters] = useState({
+        saveurs: [],
+        excludeCalifornia: false,
+    });
 
-    // Toggle saveur cochée
-    const handleToggleFlavor = (flavor) => {
-        setSelectedFlavors((prev) =>
-            prev.includes(flavor)
-                ? prev.filter((f) => f !== flavor)
-                : [...prev, flavor]
-        );
+    const handleApplyFilters = (newFilters) => {
+        setFilters({
+            saveurs: newFilters.saveurs || [],
+            excludeCalifornia: !!newFilters.excludeCalifornia,
+        });
     };
 
-    // Activer / désactiver exclusion "California Saumon Avocat"
-    const handleToggleExclude = () => {
-        setExcludeCalifornia((prev) => !prev);
-    };
-
-    // Appliquer les filtres
-    const handleApplyFilters = () => {
-        let menus = boxesData;
-
-        // Filtrer par saveurs
-        if (selectedFlavors.length > 0) {
-            menus = menus.filter((menu) =>
-                selectedFlavors.every((flavor) => menu.saveurs.includes(flavor))
-            );
-        }
-
-        // Exclure un aliment précis
-        if (excludeCalifornia) {
-            menus = menus.filter(
-                (menu) =>
-                    !menu.aliments.some(
-                        (a) => a.nom === "California Saumon Avocat"
-                    )
-            );
-        }
-
-        setFilteredMenus(menus);
-    };
-
-    // Réinitialiser tous les filtres
     const handleResetFilters = () => {
-        setSelectedFlavors([]);
-        setExcludeCalifornia(false);
-        setFilteredMenus(boxesData);
+        setFilters({
+            saveurs: [],
+            excludeCalifornia: false,
+        });
     };
+
+    const filteredMenus = useMemo(() => {
+        return boxes.filter((menu) => {
+            // Filtre par saveurs cochées
+            if (filters.saveurs.length > 0) {
+                const matchSaveur = menu.saveurs.some((s) =>
+                    filters.saveurs.includes(s)
+                );
+                if (!matchSaveur) return false;
+            }
+
+           
+            if (filters.excludeCalifornia) {
+                const hasCalifornia = menu.aliments.some(
+                    (a) => a.nom === "California Saumon Avocat"
+                );
+                if (hasCalifornia) return false;
+            }
+
+            return true;
+        });
+    }, [filters]);
 
     return (
         <div
@@ -63,15 +55,11 @@ function App() {
             }}
         >
             <Header
-                selectedFlavors={selectedFlavors}
-                onToggleFlavor={handleToggleFlavor}
+                filters={filters}
                 onApplyFilters={handleApplyFilters}
                 onResetFilters={handleResetFilters}
-                excludeCalifornia={excludeCalifornia}
-                onToggleExcludeCalifornia={handleToggleExclude}
             />
 
-            {/* CONTENU */}
             <div style={{ flex: 1 }}>
                 <Accueil menus={filteredMenus} />
             </div>

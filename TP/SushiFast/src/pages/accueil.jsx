@@ -1,6 +1,17 @@
+import { useState } from "react";
 import boxes from "../data/boxes.json";
 
 function Accueil({ menus = boxes }) {
+    const [selectedMenu, setSelectedMenu] = useState(null);
+
+    const handleCardClick = (menu) => {
+        setSelectedMenu(menu);
+    };
+
+    const closeModal = () => {
+        setSelectedMenu(null);
+    };
+
     return (
         <div style={{ paddingTop: "150px", paddingBottom: "80px" }}>
             
@@ -12,7 +23,7 @@ function Accueil({ menus = boxes }) {
                     color: "#b64537",
                     marginBottom: "40px",
                     paddingLeft: "40px",
-                    textTransform: "uppercase"
+                    textTransform: "uppercase",
                 }}
             >
                 Popular Now
@@ -22,7 +33,8 @@ function Accueil({ menus = boxes }) {
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+                    gridTemplateColumns:
+                        "repeat(auto-fit, minmax(300px, 1fr))",
                     gap: "40px",
                     padding: "0 40px",
                 }}
@@ -30,18 +42,19 @@ function Accueil({ menus = boxes }) {
                 {menus.map((menu) => (
                     <div
                         key={menu.id}
+                        onClick={() => handleCardClick(menu)}
                         style={{
                             border: "2px solid #e3b2a6",
                             borderRadius: "15px",
                             backgroundColor: "#fff",
                             padding: "25px",
                             textAlign: "center",
-                            transition: "0.3s",
+                            cursor: "pointer",
                         }}
                     >
                         {/* IMAGE */}
                         <img
-                            src={`/assets/${menu.image}.jpg`}
+                            src={`${menu.image}`}
                             alt={menu.nom}
                             style={{
                                 width: "150px",
@@ -64,7 +77,7 @@ function Accueil({ menus = boxes }) {
                             {menu.nom}
                         </h3>
 
-                        {/* DESCRIPTION / SAVEURS */}
+                        {/* SAVEURS */}
                         <p
                             style={{
                                 color: "#444",
@@ -76,13 +89,14 @@ function Accueil({ menus = boxes }) {
                             {menu.saveurs.slice(0, 3).join(", ")}
                         </p>
 
-                        {/* PRICE + ADD TO CART */}
+                        {/* PRICE + BUTTONS */}
                         <div
                             style={{
                                 display: "flex",
                                 justifyContent: "center",
                                 gap: "15px",
                             }}
+                            onClick={(e) => e.stopPropagation()}
                         >
                             <button
                                 style={{
@@ -115,6 +129,65 @@ function Accueil({ menus = boxes }) {
                     </div>
                 ))}
             </div>
+
+            {/* MODALE DETAILS */}
+            {selectedMenu && (
+                <div
+                    onClick={closeModal}
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        backgroundColor: "rgba(0,0,0,0.4)",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        zIndex: 2000,
+                    }}
+                >
+                    <div
+                        onClick={(e) => e.stopPropagation()}
+                        style={{
+                            backgroundColor: "#fff",
+                            borderRadius: "16px",
+                            padding: "24px 28px",
+                            maxWidth: "420px",
+                            width: "90%",
+                            boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+                        }}
+                    >
+                        <h2 style={{ color: "#b64537" }}>
+                            {selectedMenu.nom}
+                        </h2>
+
+                        <p><strong>{selectedMenu.pieces} pièces</strong></p>
+
+                        <p>Saveurs : {selectedMenu.saveurs.join(", ")}</p>
+
+                        <h4>Aliments :</h4>
+                        <ul>
+                            {selectedMenu.aliments.map((al, i) => (
+                                <li key={i}>{al.nom} — {al.quantite}</li>
+                            ))}
+                        </ul>
+
+                        <button
+                            onClick={closeModal}
+                            style={{
+                                marginTop: "15px",
+                                padding: "10px 18px",
+                                borderRadius: "25px",
+                                border: "none",
+                                backgroundColor: "#b64537",
+                                color: "#fff",
+                                fontWeight: "600",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Fermer
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
