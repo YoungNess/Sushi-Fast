@@ -1,120 +1,143 @@
-import { Nav, Navbar } from "react-bootstrap";
-import { FaUser, FaShoppingBasket, FaTruck, FaInfoCircle } from "react-icons/fa";
+import { useState } from "react";
+import { Container, Nav, Navbar } from "react-bootstrap";
 import { BiMenu } from "react-icons/bi";
+import { FaUser, FaShoppingBasket, FaTruck, FaInfoCircle } from "react-icons/fa";
 import { MdContactMail } from "react-icons/md";
 
-function Header() {
+function Header({ selectedFlavors, onToggleFlavor, onApplyFilters, onResetFilters }) {
+    const [open, setOpen] = useState(false);
+
+    const allFlavors = [
+        "avocat",
+        "coriandre",
+        "saumon",
+        "cheese",
+        "thon",
+        "viande",
+        "spicy",
+        "crevette"
+    ];
 
     return (
         <>
-            {/* CSS intégré */}
             <style>{`
-                .header-custom {
-                    background: #f4f1ea;
-                    width: 100%;
-                    margin: 0;
-                    padding: 0;
+                .dropdown-box {
+                    position: absolute;
+                    top: 85px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: #fff;
+                    border: 2px solid #e3b2a6;
+                    border-radius: 12px;
+                    padding: 20px;
+                    width: 280px;
+                    z-index: 999;
+                    box-shadow: 0px 4px 12px rgba(0,0,0,0.15);
                 }
-
-                /* Wrapper pour enlever les marges du container Bootstrap */
-                .header-wrapper {
-                    max-width: 100%;
-                    width: 100%;
-                    padding: 15px 30px;
+                .dropdown-item {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    margin-bottom: 10px;
+                    color: #b64537;
+                    font-weight: 500;
+                }
+                .dropdown-buttons {
                     display: flex;
                     justify-content: space-between;
-                    align-items: center;
+                    margin-top: 15px;
                 }
-
-                .logo h2 {
-                    font-family: "Pacifico", cursive;
-                    color: #b64537;
-                    line-height: 1;
-                    margin: 0;
-                }
-
-                .nav-box {
-                    padding: 12px 24px;
-                    border: 2px solid #e3b2a6;
-                    border-radius: 50px;
-                    background: #f4f1ea;
-                }
-
-                .nav-item-custom {
-                    color: #b64537 !important;
+                .btn-filter {
+                    flex: 1;
+                    padding: 8px 12px;
+                    border-radius: 8px;
+                    border: none;
+                    color: white;
                     font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 8px;
-                }
-
-                .nav-item-custom:hover {
-                    opacity: 0.7;
-                }
-
-                .icon-btn {
-                    width: 45px;
-                    height: 45px;
-                    border-radius: 50%;
-                    border: 2px solid #e3b2a6;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    background: #f4f1ea;
-                    color: #b64537;
                     cursor: pointer;
                 }
-
-                .icon-btn:hover {
-                    opacity: 0.7;
+                .btn-apply {
+                    background-color: #b64537;
+                    margin-right: 10px;
+                }
+                .btn-reset {
+                    background-color: grey;
                 }
             `}</style>
 
-            <Navbar expand="lg" className="py-0 header-custom">
-                
-                {/* WRAPPER FULL WIDTH */}
-                <div className="header-wrapper">
+            <Navbar expand="lg" className="py-3 header-custom">
+                <Container className="d-flex justify-content-between align-items-center">
 
-                    {/* LOGO */}
                     <div className="logo">
-                        <h2>Sushi<br />Fast</h2>
+                        <h2 className="mb-0" style={{ fontFamily: "Pacifico", color:"#b64537" }}>
+                            Sushi<br/>Fast
+                        </h2>
                     </div>
 
-                    {/* NAVIGATION */}
                     <div className="nav-box d-none d-lg-flex">
                         <Nav className="align-items-center gap-4">
 
-                            <Nav.Link href="#" className="nav-item-custom">
+                            {/* MENU DROPDOWN BUTTON */}
+                            <Nav.Link 
+                                className="nav-item-custom"
+                                style={{ cursor:"pointer" }}
+                                onClick={() => setOpen(!open)}
+                            >
                                 <BiMenu size={20} /> MENU
-                            </Nav.Link>
-
-                            <Nav.Link href="#" className="nav-item-custom">
-                                <FaTruck size={20} /> DELIVERY
-                            </Nav.Link>
-
-                            <Nav.Link href="#" className="nav-item-custom">
-                                <FaInfoCircle size={20} /> ABOUT
-                            </Nav.Link>
-
-                            <Nav.Link href="#" className="nav-item-custom">
-                                <MdContactMail size={20} /> CONTACTS
                             </Nav.Link>
 
                         </Nav>
                     </div>
 
-                    {/* ICONES DROITE */}
                     <div className="d-flex align-items-center gap-3">
-                        <div className="icon-btn">
-                            <FaUser size={20} />
-                        </div>
-                        <div className="icon-btn">
-                            <FaShoppingBasket size={20} />
-                        </div>
+                        <FaUser size={22} />
+                        <FaShoppingBasket size={22} />
                     </div>
-
-                </div>
+                </Container>
             </Navbar>
+
+            {/* DROPDOWN */}
+            {open && (
+                <div className="dropdown-box">
+
+                    <h4 style={{ color:"#b64537", marginBottom:"10px" }}>
+                        Filtrer par saveur :
+                    </h4>
+
+                    {allFlavors.map(flavor => (
+                        <label key={flavor} className="dropdown-item">
+                            <input 
+                                type="checkbox"
+                                checked={selectedFlavors.includes(flavor)}
+                                onChange={() => onToggleFlavor(flavor)}
+                            />
+                            {flavor}
+                        </label>
+                    ))}
+
+                    <div className="dropdown-buttons">
+                        <button 
+                            className="btn-filter btn-apply"
+                            onClick={() => {
+                                onApplyFilters();
+                                setOpen(false);
+                            }}
+                        >
+                            Appliquer
+                        </button>
+
+                        <button 
+                            className="btn-filter btn-reset"
+                            onClick={() => {
+                                onResetFilters();
+                                setOpen(false);
+                            }}
+                        >
+                            Réinitialiser
+                        </button>
+                    </div>
+                </div>
+            )}
         </>
     );
 }

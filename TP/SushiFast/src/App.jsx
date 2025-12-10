@@ -1,25 +1,43 @@
+import { useState } from "react";
 import Header from "./components/header";
 import Footer from "./components/footer";
 import Accueil from "./pages/accueil";
 
 function App() {
-    return (
-        <div 
-            style={{
-                minHeight: "100vh",
-                display: "flex",
-                flexDirection: "column"
-            }}
-        >
-            <Header />
 
-            {/* zone qui pousse le footer vers le bas */}
-            <div style={{ flex: 1 }}>
-                <Accueil />
-            </div>
+    const [selectedFlavors, setSelectedFlavors] = useState([]);
+    const [appliedFlavors, setAppliedFlavors] = useState([]);
+
+    function handleToggleFlavor(flavor) {
+        setSelectedFlavors(prev =>
+            prev.includes(flavor)
+                ? prev.filter(f => f !== flavor)
+                : [...prev, flavor]
+        );
+    }
+
+    function applyFilters() {
+        setAppliedFlavors([...selectedFlavors]);
+    }
+
+    function resetFilters() {
+        setSelectedFlavors([]);
+        setAppliedFlavors([]);
+    }
+
+    return (
+        <>
+            <Header
+                selectedFlavors={selectedFlavors}
+                onToggleFlavor={handleToggleFlavor}
+                onApplyFilters={applyFilters}
+                onResetFilters={resetFilters}
+            />
+
+            <Accueil appliedFlavors={appliedFlavors} />
 
             <Footer />
-        </div>
+        </>
     );
 }
 
