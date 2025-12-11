@@ -3,14 +3,15 @@ import { Container, Navbar } from "react-bootstrap";
 import { FaUser, FaShoppingBasket } from "react-icons/fa";
 import { BiMenu } from "react-icons/bi";
 
-function Header({ filters, onApplyFilters, onResetFilters }) {
+function Header({ 
+    filters, 
+    onApplyFilters, 
+    onResetFilters, 
+    onPriceFilter 
+}) {
     const [showFilters, setShowFilters] = useState(false);
-    const [selectedSaveurs, setSelectedSaveurs] = useState(
-        filters.saveurs || []
-    );
-    const [excludeCalifornia, setExcludeCalifornia] = useState(
-        filters.excludeCalifornia || false
-    );
+    const [selectedSaveurs, setSelectedSaveurs] = useState(filters.saveurs || []);
+    const [excludeCalifornia, setExcludeCalifornia] = useState(filters.excludeCalifornia || false);
 
     useEffect(() => {
         setSelectedSaveurs(filters.saveurs || []);
@@ -69,6 +70,8 @@ function Header({ filters, onApplyFilters, onResetFilters }) {
                     border: 2px solid #e3b2a6;
                     border-radius: 50px;
                     background: #f4f1ea;
+                    display: flex;
+                    gap: 20px;
                 }
 
                 .menu-button {
@@ -118,24 +121,11 @@ function Header({ filters, onApplyFilters, onResetFilters }) {
                     border: 1px solid #f0d5c8;
                 }
 
-                .filter-title {
-                    font-size: 20px;
-                    font-weight: 700;
-                    color: #b64537;
-                    margin-bottom: 16px;
-                }
-
                 .filter-row {
                     display: flex;
                     align-items: center;
                     gap: 8px;
                     margin-bottom: 6px;
-                    font-size: 14px;
-                    color: #5a473f;
-                }
-
-                .filter-row input {
-                    accent-color: #b64537;
                 }
 
                 .filter-actions {
@@ -144,38 +134,11 @@ function Header({ filters, onApplyFilters, onResetFilters }) {
                     gap: 10px;
                     margin-top: 18px;
                 }
-
-                .filter-btn-primary {
-                    padding: 8px 18px;
-                    border-radius: 20px;
-                    border: none;
-                    background-color: #b64537;
-                    color: #fff;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                .filter-btn-secondary {
-                    padding: 8px 18px;
-                    border-radius: 20px;
-                    border: none;
-                    background-color: #999;
-                    color: #fff;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                @media (max-width: 768px) {
-                    .filter-panel {
-                        top: 70px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                    }
-                }
             `}</style>
 
             <Navbar expand="lg" className="py-3 header-custom">
                 <Container className="d-flex justify-content-between align-items-center position-relative">
+
                     {/* LOGO */}
                     <div className="logo">
                         <h2 className="mb-0">
@@ -183,19 +146,27 @@ function Header({ filters, onApplyFilters, onResetFilters }) {
                         </h2>
                     </div>
 
-                    {/* BOUTON MENU (ouvre filtres) */}
-                    <div className="nav-box d-flex justify-content-center">
+                    {/* BOUTONS MENU */}
+                    <div className="nav-box">
                         <button
                             type="button"
                             className="menu-button"
                             onClick={() => setShowFilters((v) => !v)}
                         >
                             <BiMenu size={20} />
-                            MENU
+                            Filtres Saveurs
+                        </button>
+
+                        <button
+                            type="button"
+                            className="menu-button"
+                            onClick={onPriceFilter}
+                        >
+                            💰 Prix min / max
                         </button>
                     </div>
 
-                    {/* ICONES DROITE */}
+                    {/* ICONES */}
                     <div className="d-flex align-items-center gap-3">
                         <div className="icon-btn">
                             <FaUser size={20} />
@@ -205,52 +176,44 @@ function Header({ filters, onApplyFilters, onResetFilters }) {
                         </div>
                     </div>
 
-                    {/* PANNEAU DE FILTRES */}
+                    {/* PANNEAU FILTRES */}
                     {showFilters && (
                         <div className="filter-panel">
-                            <div className="filter-title">
+                            <h4 style={{ color: "#b64537", marginBottom: "12px" }}>
                                 Filtrer les saveurs
-                            </div>
+                            </h4>
 
                             {allSaveurs.map((sav) => (
-                                <label
-                                    className="filter-row"
-                                    key={sav}
-                                >
+                                <label className="filter-row" key={sav}>
                                     <input
                                         type="checkbox"
                                         checked={selectedSaveurs.includes(sav)}
                                         onChange={() => toggleSaveur(sav)}
                                     />
-                                    <span>{sav}</span>
+                                    {sav}
                                 </label>
                             ))}
 
-                            <hr style={{ margin: "12px 0" }} />
+                            <hr />
 
                             <label className="filter-row">
                                 <input
                                     type="checkbox"
                                     checked={excludeCalifornia}
-                                    onChange={() =>
-                                        setExcludeCalifornia((v) => !v)
-                                    }
+                                    onChange={() => setExcludeCalifornia(v => !v)}
                                 />
-                                <span>
-                                    Exclure "California Saumon Avocat"
-                                </span>
+                                Exclure "California Saumon Avocat"
                             </label>
 
                             <div className="filter-actions">
                                 <button
-                                    type="button"
                                     className="filter-btn-secondary"
                                     onClick={handleReset}
                                 >
                                     Réinitialiser
                                 </button>
+
                                 <button
-                                    type="button"
                                     className="filter-btn-primary"
                                     onClick={handleApply}
                                 >

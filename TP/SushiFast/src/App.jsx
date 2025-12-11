@@ -8,12 +8,15 @@ function App() {
     const [filters, setFilters] = useState({
         saveurs: [],
         excludeCalifornia: false,
+        priceFilter: null // min & max menus
     });
 
     const handleApplyFilters = (newFilters) => {
         setFilters({
+            ...filters,
             saveurs: newFilters.saveurs || [],
             excludeCalifornia: !!newFilters.excludeCalifornia,
+            priceFilter: null
         });
     };
 
@@ -21,29 +24,42 @@ function App() {
         setFilters({
             saveurs: [],
             excludeCalifornia: false,
+            priceFilter: null
+        });
+    };
+
+    const handlePriceFilter = () => {
+        const min = boxes.reduce((a, b) => (a.prix < b.prix ? a : b));
+        const max = boxes.reduce((a, b) => (a.prix > b.prix ? a : b));
+
+        setFilters({
+            saveurs: [],
+            excludeCalifornia: false,
+            priceFilter: [min, max]
         });
     };
 
     const filteredMenus = useMemo(() => {
-        return boxes.filter((menu) => {
-            // Filtre par saveurs cochées
-            if (filters.saveurs.length > 0) {
-                const matchSaveur = menu.saveurs.some((s) =>
-                    filters.saveurs.includes(s)
-                );
-                if (!matchSaveur) return false;
-            }
+        if (filters.priceFilter) return filters.priceFilter;
 
-           
-            if (filters.excludeCalifornia) {
-                const hasCalifornia = menu.aliments.some(
-                    (a) => a.nom === "California Saumon Avocat"
-                );
-                if (hasCalifornia) return false;
-            }
+        let result = boxes;
 
-            return true;
-        });
+        if (filters.saveurs.length > 0) {
+            result = result.filter((menu) =>
+                menu.saveurs.some((s) => filters.saveurs.includes(s))
+            );
+        }
+
+        if (filters.excludeCalifornia) {
+            result = result.filter(
+                (menu) =>
+                    !menu.aliments.some(
+                        (a) => a.nom === "California Saumon Avocat"
+                    )
+            );
+        }
+
+        return result;
     }, [filters]);
 
     return (
@@ -58,6 +74,7 @@ function App() {
                 filters={filters}
                 onApplyFilters={handleApplyFilters}
                 onResetFilters={handleResetFilters}
+                onPriceFilter={handlePriceFilter}
             />
 
             <div style={{ flex: 1 }}>

@@ -1,21 +1,10 @@
 import { useState } from "react";
-import boxes from "../data/boxes.json";
 
-function Accueil({ menus = boxes }) {
+function Accueil({ menus }) {
     const [selectedMenu, setSelectedMenu] = useState(null);
-
-    const handleCardClick = (menu) => {
-        setSelectedMenu(menu);
-    };
-
-    const closeModal = () => {
-        setSelectedMenu(null);
-    };
 
     return (
         <div style={{ paddingTop: "150px", paddingBottom: "80px" }}>
-            
-            {/* SECTION TITLE */}
             <h1
                 style={{
                     fontSize: "48px",
@@ -29,12 +18,10 @@ function Accueil({ menus = boxes }) {
                 Popular Now
             </h1>
 
-            {/* GRID OF MENUS */}
             <div
                 style={{
                     display: "grid",
-                    gridTemplateColumns:
-                        "repeat(auto-fit, minmax(300px, 1fr))",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
                     gap: "40px",
                     padding: "0 40px",
                 }}
@@ -42,19 +29,16 @@ function Accueil({ menus = boxes }) {
                 {menus.map((menu) => (
                     <div
                         key={menu.id}
-                        onClick={() => handleCardClick(menu)}
                         style={{
                             border: "2px solid #e3b2a6",
                             borderRadius: "15px",
                             backgroundColor: "#fff",
                             padding: "25px",
                             textAlign: "center",
-                            cursor: "pointer",
                         }}
                     >
-                        {/* IMAGE */}
                         <img
-                            src={`${menu.image}`}
+                            src={menu.image}
                             alt={menu.nom}
                             style={{
                                 width: "150px",
@@ -65,7 +49,6 @@ function Accueil({ menus = boxes }) {
                             }}
                         />
 
-                        {/* TITLE */}
                         <h3
                             style={{
                                 color: "#b64537",
@@ -77,63 +60,42 @@ function Accueil({ menus = boxes }) {
                             {menu.nom}
                         </h3>
 
-                        {/* SAVEURS */}
-                        <p
-                            style={{
-                                color: "#444",
-                                fontSize: "14px",
-                                minHeight: "50px",
-                                marginBottom: "20px",
-                            }}
-                        >
+                        <p style={{ color: "#444" }}>
                             {menu.saveurs.slice(0, 3).join(", ")}
                         </p>
 
-                        {/* PRICE + BUTTONS */}
-                        <div
+                        <p
                             style={{
-                                display: "flex",
-                                justifyContent: "center",
-                                gap: "15px",
+                                color: "#b64537",
+                                fontWeight: "700",
+                                fontSize: "20px",
+                                marginBottom: "15px",
                             }}
-                            onClick={(e) => e.stopPropagation()}
                         >
-                            <button
-                                style={{
-                                    padding: "10px 18px",
-                                    borderRadius: "25px",
-                                    backgroundColor: "#b64537",
-                                    border: "none",
-                                    color: "#fff",
-                                    fontSize: "15px",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                {menu.prix} €
-                            </button>
+                            {menu.prix} €
+                        </p>
 
-                            <button
-                                style={{
-                                    padding: "10px 20px",
-                                    borderRadius: "25px",
-                                    backgroundColor: "#b64537",
-                                    border: "none",
-                                    color: "#fff",
-                                    fontSize: "15px",
-                                    fontWeight: "600",
-                                }}
-                            >
-                                🛒 Add to Cart
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setSelectedMenu(menu)}
+                            style={{
+                                padding: "10px 20px",
+                                borderRadius: "25px",
+                                backgroundColor: "#b64537",
+                                border: "none",
+                                color: "#fff",
+                                fontWeight: "600",
+                                cursor: "pointer",
+                            }}
+                        >
+                            Détails
+                        </button>
                     </div>
                 ))}
             </div>
 
-            {/* MODALE DETAILS */}
             {selectedMenu && (
                 <div
-                    onClick={closeModal}
+                    onClick={() => setSelectedMenu(null)}
                     style={{
                         position: "fixed",
                         inset: 0,
@@ -149,10 +111,9 @@ function Accueil({ menus = boxes }) {
                         style={{
                             backgroundColor: "#fff",
                             borderRadius: "16px",
-                            padding: "24px 28px",
-                            maxWidth: "420px",
-                            width: "90%",
-                            boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
+                            padding: "24px",
+                            width: "420px",
+                            maxWidth: "90%",
                         }}
                     >
                         <h2 style={{ color: "#b64537" }}>
@@ -171,15 +132,14 @@ function Accueil({ menus = boxes }) {
                         </ul>
 
                         <button
-                            onClick={closeModal}
+                            onClick={() => setSelectedMenu(null)}
                             style={{
                                 marginTop: "15px",
-                                padding: "10px 18px",
+                                padding: "10px 20px",
                                 borderRadius: "25px",
-                                border: "none",
                                 backgroundColor: "#b64537",
+                                border: "none",
                                 color: "#fff",
-                                fontWeight: "600",
                                 cursor: "pointer",
                             }}
                         >
